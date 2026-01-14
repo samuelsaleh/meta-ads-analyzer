@@ -1,0 +1,19 @@
+# Ad Intelligence Mini-App Dependencies
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn>=0.27.0
+jinja2>=3.1.0
+python-multipart>=0.0.6
+
+# Browser Automation
+browser-use>=0.1.0
+playwright>=1.40.0
+
+# LLM APIs
+langchain-openai>=0.3.0      # GPT-5.2 for extraction
+anthropic>=0.39.0            # Claude for analysis
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.0.0

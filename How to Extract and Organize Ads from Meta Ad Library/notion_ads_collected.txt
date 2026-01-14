@@ -1,0 +1,275 @@
+# Notion Ads - Meta Ad Library - France - Oct 1 to Dec 1, 2025
+# Source: https://www.facebook.com/ads/library/
+# Filters: Advertiser=Notion, Country=France, Date Range=Oct 1 - Dec 1, 2025
+# Total Results: ~150
+
+## Key Observations from Visual Inspection:
+
+### Ad Creative Types Identified:
+1. Image Ad - "Get up to $12,000 of Free Notion" (Yellow background with Notion logo)
+   - CTA: "Free Trial with AI Access"
+   - Visual: Smart Collaboration Meets AI Automation
+   
+2. Image Ad - "Organize Everything. Accomplish Anything."
+   - Subtitle: "The Collaborative Workspace with AI Automation"
+   - CTA: "Free Trial with AI Access"
+   
+3. Image Ad - "Capture knowledge. Fewer Tools. Less Hassle."
+   - Subtitle: "The only AI powered workspace purposefully built for collaboration"
+   - CTA: "Free Trial with AI Access"
+
+4. Image Ad - "Automate Productivity. Elevate Collaboration."
+   - Similar visual style
+
+### Common Primary Text (Creative Copy):
+"🎯 Strategic Investment: Up to 3 Months of Notion Business at Zero Cost → Enterprise-Grade AI Suite → No Financial Commitment Required > Invite your team!"
+
+### Landing Page URL Pattern:
+FB.ME redirect links (e.g., "Stop waiting. Start transforming. Get up to...")
+
+### Ads Collected (Library IDs with Start Dates):
+
+## December 2025 Launches:
+1. 1998253154053756 - 1 Dec 2025 - 3 ads use this creative
+2. 1372662174553593 - 1 Dec 2025 - 3 ads use this creative
+3. 33178017121796653 - 1 Dec 2025 - 4 ads use this creative
+
+## November 2025 Launches:
+4. 1534506987820562 - 30 Nov 2025 - 3 ads use this creative
+5. 1896766744269413 - 29 Nov 2025 - 3 ads use this creative
+6. 1510691103499748 - 28 Nov 2025 - 3 ads use this creative
+7. 1522774482178778 - 30 Nov 2025 - 3 ads use this creative (Low impression)
+8. 1917349382492571 - 29 Nov 2025 - 3 ads use this creative
+9. 1878549036373191 - 28 Nov 2025 - 3 ads use this creative
+10. 2250604465433037 - 29 Nov 2025 - 3 ads use this creative
+11. 815477051309468 - 28 Nov 2025 - 3 ads use this creative
+12. 1920655731853268 - 28 Nov 2025 - 3 ads use this creative
+13. 4347429842143714 - 28 Nov 2025 - 2 ads use this creative
+14. 809761782231347 - 28 Nov 2025 - 4 ads use this creative (Low impression)
+15. 3772558742878074 - 29 Nov 2025 - 4 ads use this creative
+16. 1081287527329096 - 29 Nov 2025 - 4 ads use this creative
+17. 824734757008434 - 28 Nov 2025 - 4 ads use this creative
+18. 834834686019691 - 28 Nov 2025 - 4 ads use this creative
+19. 1389433929469593 - 29 Nov 2025 - 4 ads use this creative (Low impression)
+20. 1381451773574930 - 28 Nov 2025 - 4 ads use this creative (Low impression)
+21. 1164385105342143 - 30 Nov 2025 - 4 ads use this creative (Low impression)
+
+## Additional November ads visible:
+- Started running on 29 Nov 2025 - 4 ads use this creative
+- Started running on 28 Nov 2025 - 4 ads use this creative
+- Started running on 28 Nov 2025 - 4 ads use this creative
+
+## Platforms:
+All ads run on Facebook and Instagram
+
+## Note:
+Need to continue scrolling to collect all ~150 ads and click individual ads to get:
+- Full headline text
+- CTA button text
+- Landing page URL
+- Ad format confirmation (image/video/carousel)
+
+
+## Additional Ads Found (Continued Scrolling):
+
+### New Library IDs - November 2025:
+22. 1543942936751571 - 28 Nov 2025 - 6 ads use this creative (Low impression) - IMAGE
+23. 2590426494652106 - 28 Nov 2025 - 3 ads use this creative - VIDEO (Bug Tracker demo)
+24. 955696807615546 - 28 Nov 2025 - 3 ads use this creative - VIDEO
+
+### Ad Formats Identified:
+- IMAGE: Yellow "Get up to $12,000 of Free Notion" creative
+- IMAGE: "Organize Everything. Accomplish Anything." creative
+- IMAGE: "Capture knowledge. Fewer Tools. Less Hassle." creative
+- IMAGE: "More Productivity. Fewer Tools. Less Hassle." creative
+- VIDEO: Bug Tracker demo video
+- VIDEO: Other product demo videos
+
+### Visual Creative Variations:
+1. Yellow background with "$12,000 of Free Notion" offer
+2. Teal/Green background with "Organize Everything. Accomplish Anything."
+3. Teal/Green background with "Capture knowledge. Fewer Tools. Less Hassle."
+4. Teal/Green background with "More Productivity. Fewer Tools. Less Hassle."
+5. Video ads showing product demos (Bug Tracker, etc.)
+
+
+## More Ads Found - November 2025 (Mid-month):
+
+### New Primary Text Variation Found:
+"🎯 Act Fast: Get Your Notion Business Plan FREE for 3 Months..."
+
+### New Library IDs - November 2025:
+25. 1798801960785200 - 15 Nov 2025 - 4 ads use this creative
+26. 1139309041645845 - 16 Nov 2025 - 3 ads use this creative
+27. 1757760241591478 - 16 Nov 2025 - 4 ads use this creative
+
+### Primary Text Variations Identified:
+1. "🎯 Strategic Investment: Up to 3 Months of Notion Business at Zero Cost → Enterprise-Grade AI Suite → No Financial Commitment Required > Invite your team!"
+2. "🎯 Act Fast: Get Your Notion Business Plan FREE for 3 Months..."
+
+
+## More Ads Found - November 2025 (Early November):
+
+### New Primary Text Variation Found:
+"We're changing the way work gets done. Collaboration meets AI meets beautiful functionality."
+
+### New Library IDs - November 2025:
+28. 1147019664259078 - 16 Nov 2025 - 3 ads use this creative
+29. 1119040853728548 - 7 Nov 2025 - EU transparency - "We're changing the way work gets done..."
+30. 1192539639648357 - 3 Nov 2025 - 3 ads use this creative - "We're changing the way work gets done..."
+
+### Primary Text Variations Identified (Updated):
+1. "🎯 Strategic Investment: Up to 3 Months of Notion Business at Zero Cost → Enterprise-Grade AI Suite → No Financial Commitment Required > Invite your team!"
+2. "🎯 Act Fast: Get Your Notion Business Plan FREE for 3 Months → Full AI Suite Included → No Credit Card Required"
+3. "We're changing the way work gets done. Collaboration meets AI meets beautiful functionality."
+
+### Landing Page URL Pattern Found:
+FB.ME - "Where thoughtful work happens. Limited Time..."
+
+
+## More Ads Found - November 2025 (Early November):
+
+### New Library IDs - November 2025:
+31. 1499348791210803 - 5 Nov 2025 - 2 ads use this creative - EU transparency
+32. 2504624180833745 - 3 Nov 2025 - 2 ads use this creative
+33. 1121120940177604 - 3 Nov 2025 - 2 ads use this creative - EU transparency
+
+### Visual Creative Headlines Found:
+1. "Collaboration Meets AI Automation" - Yellow background
+2. "Smart Collaboration Meets AI Automation" - Yellow background with "Free 3 Month Trial with Full AI Access" and "Get up to $12,000 of FREE Notion"
+3. "Smart Collaboration Meets AI Automation" - Yellow background with "strategize. automate. conquer."
+
+### Landing Page URL Pattern:
+FB.ME - "Transform productivity with AI-driven collab..."
+
+
+## More Ads Found - November 2025 (Continued):
+
+### New Visual Creative Headlines Found:
+1. "Smart Collaboration Meets AI Automation" - Yellow background
+   - Subtext: "Free 3 Month Trial with Full AI Access"
+   - Subtext: "Get up to $12,000 of FREE Notion"
+   - Characters: Editor, Agent, Notetaker, Researcher
+   
+2. "Smart Collaboration Meets AI Automation" - Yellow background
+   - Subtext: "strategize. automate. conquer."
+   - Subtext: "Free 3 Month Trial"
+   - Subtext: "Get up to $12,000 of FREE Notion with full AI..."
+
+3. "Transform Productivity with AI-Driven Collaboration" - Yellow background
+   - Subtext: "collaborate. automate. accelerate."
+   - Subtext: "Get up to $12,000 of FREE Notion"
+   - Subtext: "Free 3 Month Trial with Full AI Access"
+
+### New Primary Text Found:
+"🎯 Act Fast: Get Your Notion Business Plan FREE for 3 Months → Full AI Suite Included → No Credit Card Required
+
+Why professionals and teams are making the switch: ↓
+
+✅ Advanced AI Agents handle multi-step workflows for you (up to $12,000 value)..."
+
+### Landing Page URL Pattern:
+FB.ME - "Get up to 3 Free Months* with Full Access to AI. No credit card..."
+CTA: "Get offer"
+
+
+## More Creative Headlines Found - November 2025:
+
+### New Visual Creative Headlines:
+1. "Dream it. Map it. Build it. Share it. Your way." - Yellow background
+   - Subtext: "Where clarity creates real capability."
+   - Subtext: "Free 3 Month Trial with Full AI Access"
+   - Subtext: "Get up to $12,000 of free Notion"
+
+2. "Work smarter, not harder with AI-driven collaboration." - Yellow background
+   - Subtext: "collaborate. automate. accelerate."
+   - Subtext: "Get up to $12,000 of FREE Notion"
+   - Subtext: "Free 3 Month Trial with Full AI Access"
+
+### Landing Page URL Pattern:
+FB.ME - "Get up to 3 Free Months* with Access to AI. No credit card required."
+- "Here's all the features and tools that Notion provides: ↓ ✅ AI-powered productivity (up to $12,000 value)↓ research, meeting notes ✅ Great..."
+- CTA: "Get offer"
+
+
+## More Creative Headlines Found - November 2025 (Continued):
+
+### New Visual Creative Headlines:
+1. "Plan it. Build it. Organize it. Share it. Your way." - Yellow background
+   - Subtext: "Connected Productivity X Infinite Possibility."
+   - Subtext: "Free 3 Month Trial with Full AI Access"
+   - Subtext: "Get up to $12,000 of free Notion"
+
+### New Primary Text Variation:
+"We want you to enjoy all the best Notion tools for productivity, collaboration, and organization.
+
+Now offering a Free 3 Month Trial of Notion with full access to Notion AI.
+
+✅ Powerful, multi-use AI..."
+
+### Video Ad Found:
+- Video ad with person speaking (testimonial/demo style)
+
+
+## OCTOBER 2025 ADS FOUND:
+
+### New Visual Creative Headlines (October):
+1. "Work smarter. Not harder. with AI-driven Collaboration." - Yellow background
+   - Subtext: "collaborate. automate. accelerate."
+   - Subtext: "Free 3 Months Trial with Full Access to AI"
+   - Subtext: "Get up to $12,000 of free Notion"
+
+2. Testimonial/Case Study Ad - "We cut Ramp's tool costs by over 70%"
+   - Quote: "We've moved our entire roadmap to Notion." - Geoff Charles
+   - Video format with person speaking
+
+### Landing Page URL Pattern (October):
+FB.ME - "Transform productivity with AI-driven collaboration. Get 3 Free..."
+
+
+## DETAILED AD CREATIVE #1 (Library ID: 1998253154053756):
+
+### Visual Creative:
+- Headline on Image: "Organize Everything. Accomplish Anything."
+- CTA Button on Image: "Free Trial with AI Access"
+- Subtext on Image: "Smart Collaboration Meets AI Automation"
+- Format: Image (Static)
+- Characters: Notion mascots (checkmark, document, emoji faces)
+- Shows: Product interface preview with "Product" and "Projects" sections
+
+### Ad Details:
+- Library ID: 1998253154053756
+- First Seen: 1 Dec 2025
+- Platforms: Facebook, Instagram
+- Impressions: <100 (Low impression count)
+- 3 ads use this creative and text
+
+### Primary Text:
+"🎯 Strategic Investment: Up to 3 Months of Notion Business at Zero Cost → Enterprise-Grade AI Suite → No Financial Commitment Required > Invite your team!"
+
+### Landing Page:
+FB.ME - "Stop waiting. Start transforming. Get up to..."
+
+
+## THREE DISTINCT CREATIVE VARIATIONS VISIBLE (November 2025):
+
+### Creative Variation 1:
+- Image Headline: "Organize Everything. Accomplish Anything."
+- CTA on Image: "Free Trial with AI Access"
+- Subtext: "Smart Collaboration Meets AI Automation"
+- Library ID Examples: 1998253154053756, 2250604465433037
+
+### Creative Variation 2:
+- Image Headline: "Automate Productivity. Elevate Collaboration."
+- CTA on Image: "Free Trial with AI Access"
+- Subtext: "Smart Collaboration Meets AI Automation"
+- Library ID Examples: 815477051309468
+
+### Creative Variation 3:
+- Image Headline: "Get up to $12,000 of Free Notion"
+- CTA on Image: "Free Trial with AI Access"
+- Subtext: "Smart Collaboration Meets AI Automation"
+- Library ID Examples: 1920655731853268
+
+All three share the same Primary Text:
+"🎯 Strategic Investment: Up to 3 Months of Notion Business at Zero Cost → Enterprise-Grade AI Suite → No Financial Commitment Required > Invite your team!"
