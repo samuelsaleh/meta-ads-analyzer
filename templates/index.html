@@ -231,7 +231,10 @@
                 
                 clearTimeout(stepInterval);
                 
-                if (response.ok) {
+                // Check content type to determine if it's JSON error or HTML report
+                const contentType = response.headers.get('content-type') || '';
+                
+                if (response.ok && contentType.includes('text/html')) {
                     // Mark all steps as done
                     const activeLines = logContent.querySelectorAll('.log-line.active');
                     activeLines.forEach(line => {
@@ -275,12 +278,35 @@
                     }, 3000);
                     
                 } else {
-                    const text = await response.text();
-                    addLogLine('❌ Error: ' + text.substring(0, 100), false);
+                    // Handle error response (could be JSON or HTML)
+                    let errorMsg = 'An error occurred';
+                    try {
+                        if (contentType.includes('application/json')) {
+                            const errorData = await response.json();
+                            errorMsg = errorData.error || errorData.message || 'Unknown error';
+                        } else {
+                            const text = await response.text();
+                            // Try to extract error from HTML if it's an error page
+                            const errorMatch = text.match(/<p class="error-message">(.+?)<\/p>/);
+                            errorMsg = errorMatch ? errorMatch[1] : text.substring(0, 200);
+                        }
+                    } catch (e) {
+                        errorMsg = `Server error (${response.status})`;
+                    }
+                    
+                    // Mark all active steps as done
+                    const activeLines = logContent.querySelectorAll('.log-line.active');
+                    activeLines.forEach(line => {
+                        line.classList.remove('active');
+                        line.classList.add('done');
+                    });
+                    
+                    addLogLine('❌ Error: ' + errorMsg, false);
                     progressText.textContent = 'Error occurred';
                     btnText.style.display = 'inline';
                     btnLoading.style.display = 'none';
                     submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
                 }
             } catch (error) {
                 clearTimeout(stepInterval);
@@ -288,13 +314,22 @@
                 if (error.name === 'AbortError') {
                     errorMsg = 'Request timed out. The analysis is taking longer than expected. Please try again or check server logs.';
                 } else if (error.message.includes('Failed to fetch')) {
-                    errorMsg = 'Failed to connect to server. Please check if the server is running and try again.';
+                    errorMsg = 'Failed to connect to server. Please ensure the server is running on port 8002 and you are accessing the app from http://localhost:8002';
                 }
+                
+                // Mark all active steps as done
+                const activeLines = logContent.querySelectorAll('.log-line.active');
+                activeLines.forEach(line => {
+                    line.classList.remove('active');
+                    line.classList.add('done');
+                });
+                
                 addLogLine('❌ ' + errorMsg, false);
-                progressText.textContent = 'Error occurred';
+                progressText.textContent = 'Connection error';
                 btnText.style.display = 'inline';
                 btnLoading.style.display = 'none';
                 submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
             }
         });
     </script>

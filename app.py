@@ -17,6 +17,7 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from src.extractor import MetaAdsExtractor
@@ -31,6 +32,15 @@ app = FastAPI(
     title="Meta Ads Analyzer",
     description="Analyze Meta Ad Library ads for any brand",
     version="1.0.0"
+)
+
+# Add CORS middleware to allow cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Paths
@@ -107,47 +117,51 @@ async def analyze_brand(
     - country (optional, default "ALL"): Country code (ALL, FR, US, GB, DE)
     - max_ads (optional, default 10): Maximum ads to extract
     """
+    import time
+    start_time = time.time()
+    
     try:
         # Step 1: Extract ads (async)
-        print(f"[1/4] Extracting ads for '{brand}' (country={country}, max={max_ads})...")
+        print(f"[{time.time() - start_time:.1f}s] [1/4] Extracting ads for '{brand}' (country={country}, max={max_ads})...")
         extraction_result = await extractor.extract(brand, country, max_ads)
         
         # Check for extraction errors
         if "error" in extraction_result:
             error_msg = f"Failed to extract ads for '{brand}': {extraction_result.get('error')}"
-            return templates.TemplateResponse(
-                "error.html",
-                {"request": request, "error": error_msg},
-                status_code=400
+            print(f"[{time.time() - start_time:.1f}s] ✗ Extraction error: {error_msg}")
+            return JSONResponse(
+                status_code=400,
+                content={"status": "error", "error": error_msg, "step": "extraction"}
             )
         
         # Check if any ads were found
         ads_count = len(extraction_result.get("ads", []))
         if ads_count == 0:
             error_msg = f"No active ads found for '{brand}' in {country}. Try a different brand or country."
-            return templates.TemplateResponse(
-                "error.html",
-                {"request": request, "error": error_msg},
-                status_code=404
+            print(f"[{time.time() - start_time:.1f}s] ✗ No ads found")
+            return JSONResponse(
+                status_code=404,
+                content={"status": "error", "error": error_msg, "step": "extraction"}
             )
         
-        print(f"[2/4] Analyzing {ads_count} ads...")
+        print(f"[{time.time() - start_time:.1f}s] [2/4] Analyzing {ads_count} ads...")
         
         # Step 2: Analyze ads (sync)
         analyzed_result = analyzer.analyze_batch(extraction_result)
         
         # Step 3: Generate insights (sync)
-        print("[3/4] Generating insights...")
+        print(f"[{time.time() - start_time:.1f}s] [3/4] Generating insights...")
         analyzed_result["insights"] = analyzer.generate_insights(analyzed_result)
         
         # Step 4: Generate HTML report (sync)
-        print("[4/4] Generating report...")
+        print(f"[{time.time() - start_time:.1f}s] [4/4] Generating report...")
         report_path = report_generator.generate(analyzed_result)
         
         # Also generate JSON export
         report_generator.generate_json_export(analyzed_result)
         
-        print(f"✓ Report generated: {report_path}")
+        elapsed = time.time() - start_time
+        print(f"[{elapsed:.1f}s] ✓ Report generated: {report_path}")
         
         # Return the HTML report file
         return FileResponse(
@@ -157,23 +171,23 @@ async def analyze_brand(
         )
         
     except asyncio.TimeoutError:
-        print(f"✗ Timeout: Analysis took too long for '{brand}'")
+        elapsed = time.time() - start_time
+        print(f"[{elapsed:.1f}s] ✗ Timeout: Analysis took too long for '{brand}'")
         error_msg = f"Analysis timed out for '{brand}'. The process is taking longer than expected. Please try with fewer ads or try again later."
-        return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "error": error_msg},
-            status_code=504
+        return JSONResponse(
+            status_code=504,
+            content={"status": "error", "error": error_msg, "step": "processing"}
         )
     except Exception as e:
         import traceback
         error_trace = traceback.format_exc()
-        print(f"✗ Error: {str(e)}")
+        elapsed = time.time() - start_time
+        print(f"[{elapsed:.1f}s] ✗ Error: {str(e)}")
         print(f"Traceback: {error_trace}")
         error_msg = f"An unexpected error occurred: {str(e)}"
-        return templates.TemplateResponse(
-            "error.html",
-            {"request": request, "error": error_msg},
-            status_code=500
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "error": error_msg, "step": "processing", "details": str(e)}
         )
 
 
