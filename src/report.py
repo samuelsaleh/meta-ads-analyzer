@@ -30,25 +30,39 @@ class ReportGenerator:
             str: Chemin vers le fichier HTML généré
         """
         template = self.env.get_template("report.html")
+        
+        summary = analyzed_result.get("analysis_summary", {})
+        insights = analyzed_result.get("insights", {})
 
         # Préparer les données pour le template
         context = {
+            # Basic info
             "brand": analyzed_result.get("brand", "Unknown"),
+            "market": analyzed_result.get("market", analyzed_result.get("country", "ALL")),
             "generation_date": datetime.now().strftime("%d %B %Y"),
             "generation_time": datetime.now().strftime("%H:%M"),
+            
+            # Metrics
             "total_ads": len(analyzed_result.get("ads", [])),
-            "average_score": analyzed_result.get("analysis_summary", {}).get("average_score", 0),
+            "average_score": summary.get("average_score", 0),
+            
+            # Ads data
             "ads": analyzed_result.get("ads", []),
-            "insights": analyzed_result.get("insights", {}),
-            "hook_distribution": analyzed_result.get("analysis_summary", {}).get("hook_distribution", {}),
-            "funnel_distribution": analyzed_result.get("analysis_summary", {}).get("funnel_distribution", {})
+            
+            # Full insights object (contains all distributions and recommendations)
+            "insights": insights,
+            
+            # Legacy fields for backward compatibility
+            "hook_distribution": summary.get("hook_distribution", {}),
+            "funnel_distribution": summary.get("funnel_distribution", {})
         }
 
         # Rendre le template
         html_content = template.render(**context)
 
         # Sauvegarder le fichier
-        filename = f"{context['brand'].lower().replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+        brand_slug = context['brand'].lower().replace(' ', '_').replace('/', '_')
+        filename = f"{brand_slug}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         filepath = self.output_dir / filename
         filepath.write_text(html_content, encoding="utf-8")
 

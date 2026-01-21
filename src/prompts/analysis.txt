@@ -1,71 +1,96 @@
-Tu es un expert en stratégie publicitaire et marketing digital avec 15 ans d'expérience.
-Analyse cette publicité et fournis des insights stratégiques actionnables.
+You are a senior advertising strategist analyzing Meta ads for competitive intelligence.
 
-PUBLICITÉ À ANALYSER:
-- Marque: {brand}
-- Marché: {market}
-- Primary Text: {primary_text}
-- Headline: {headline}
-- CTA: {cta}
-- Format: {format}
-- First Seen: {first_seen}
+=== AD DATA ===
+Brand: {brand}
+Market: {market}
+Primary Text: {primary_text}
+Headline: {headline}
+CTA: {cta}
+Format: {format}
+First Seen: {first_seen}
 
-ANALYSE REQUISE:
+=== ANALYSIS REQUIRED ===
 
-1. LANGUAGE
-Détecte la langue du texte publicitaire (English, French, German, Spanish, Italian, etc.)
+Analyze this ad and provide structured insights. Be specific and actionable.
 
-2. HOOK TYPE
-Identifie le type d'accroche principal:
-- EMOTIONAL: Joue sur les émotions (peur, désir, fierté, appartenance)
-- RATIONAL: Utilise la logique (faits, chiffres, comparaisons, preuves)
-- SOCIAL_PROOF: S'appuie sur la preuve sociale (témoignages, popularité, reviews)
-- URGENCY: Crée un sentiment d'urgence (temps limité, stock limité, offre spéciale)
-- CURIOSITY: Suscite la curiosité (question, mystère, teaser, révélation)
+1. LANGUAGE: Detect the language (English, French, German, Spanish, Italian, Dutch, Portuguese, Other)
 
-3. MARKET STRATEGY
-Analyse la stratégie de marché basée sur le contenu et le CTA:
-- "Brand Awareness / Storytelling" - Focus sur l'image de marque
-- "Product Launch / New Collection" - Lancement de produit
-- "Retail / Store Traffic" - Drive-to-store, boutiques physiques
-- "E-commerce / Direct Sales" - Vente en ligne directe
-- "Lead Generation / Consultation" - Génération de leads, prise de RDV
-- "Expansion / New Market" - Expansion géographique
-- "Influencer / UGC" - Contenu influenceur ou UGC
-- "Retargeting / Loyalty" - Fidélisation, retargeting
+2. HOOK TYPE: Classify the primary psychological hook:
+- EMOTIONAL: Appeals to feelings, desires, aspirations, belonging
+- RATIONAL: Uses logic, features, comparisons, proof points
+- SOCIAL_PROOF: Leverages testimonials, reviews, popularity, UGC
+- URGENCY: Creates time pressure (limited offer, ending soon, low stock)
+- CURIOSITY: Teases, asks questions, creates mystery
+- VALUE_ANCHOR: Emphasizes monetary value, savings, ROI (e.g., "$12,000 value")
 
-4. TARGET AUDIENCE
-- Démographie: tranche d'âge, genre, revenus
-- Psychographie: valeurs, intérêts, style de vie
-- Awareness level: unaware / problem_aware / solution_aware / product_aware
+3. MESSAGE STRATEGY: Classify the primary text messaging approach:
+- "Strategic Investment" - Focuses on business value, ROI, no-risk positioning
+- "Urgency/Act Fast" - Time-limited, scarcity-driven messaging
+- "Brand Story" - About the company mission, vision, transformation
+- "Value/Benefits" - Product benefits, features, what you get
+- "Social Proof/Testimonial" - Customer success, case studies
+- "Promotion/Offer" - Discount, sale, free trial emphasis
+- "New Launch" - New product, collection, feature announcement
+- "Lifestyle/Aspirational" - Lifestyle imagery, aspirational messaging
 
-5. FUNNEL STAGE
-- TOFU (Top of Funnel): Awareness, découverte
-- MOFU (Middle of Funnel): Consideration, évaluation
-- BOFU (Bottom of Funnel): Conversion, achat
+4. HEADLINE THEME: Classify the headline approach:
+- "Productivity/Efficiency" - Work smarter, accomplish more
+- "Value/Savings" - Monetary value, free, discount
+- "AI/Automation" - AI-powered, automated, intelligent
+- "Transformation" - Change, evolve, transform
+- "Customization" - Your way, personalized
+- "Quality/Luxury" - Premium, exceptional, exclusive
+- "Urgency/Limited" - Now, today, limited time
+- "Action/CTA" - Direct call to action in headline
 
-6. SCORE (1-10)
-Basé sur: clarté, pertinence CTA, cohérence créative
+5. TARGET AUDIENCE:
+- Demographics: Age range, gender, income level, profession
+- Psychographics: Values, interests, aspirations, pain points
+- Awareness Level: unaware / problem_aware / solution_aware / product_aware / most_aware
 
-FORMAT DE SORTIE (JSON uniquement):
+6. FUNNEL STAGE:
+- TOFU: Brand awareness, discovery, education
+- MOFU: Consideration, comparison, evaluation
+- BOFU: Conversion, purchase, trial signup
+
+7. VISUAL THEME (based on format and messaging):
+- "Product Focus" - Product shots, UI screenshots
+- "Lifestyle" - People using product, lifestyle imagery
+- "Value Highlight" - Price/discount prominently displayed
+- "Brand Identity" - Logo, mascots, brand colors
+- "Testimonial" - Customer quotes, video testimonials
+- "Demo/Tutorial" - Product walkthrough, how-to
+
+8. SCORE (1-10):
+- Clarity: Is the message immediately clear?
+- CTA Relevance: Does the CTA match the intent?
+- Creative Coherence: Do all elements work together?
+- Competitive Edge: Is it differentiated from typical ads?
+
+9. KEY STRATEGIC INSIGHT: One actionable takeaway about this ad's strategy.
+
+=== OUTPUT (JSON only, no markdown) ===
 {{
-    "language": "English|French|German|Spanish|Italian|Other",
-    "hook_type": "EMOTIONAL|RATIONAL|SOCIAL_PROOF|URGENCY|CURIOSITY",
-    "hook_description": "Explication courte",
-    "market_strategy": "Brand Awareness / Storytelling|Product Launch / New Collection|Retail / Store Traffic|E-commerce / Direct Sales|Lead Generation / Consultation|Expansion / New Market|Influencer / UGC|Retargeting / Loyalty",
-    "market_strategy_reasoning": "Pourquoi cette stratégie",
+    "language": "English",
+    "hook_type": "EMOTIONAL|RATIONAL|SOCIAL_PROOF|URGENCY|CURIOSITY|VALUE_ANCHOR",
+    "hook_description": "Brief explanation of the hook",
+    "message_strategy": "One of the strategies above",
+    "message_strategy_reasoning": "Why this classification",
+    "headline_theme": "One of the themes above",
     "target_audience": {{
-        "demographics": "Description démographique",
-        "psychographics": "Description psychographique",
-        "awareness_level": "unaware|problem_aware|solution_aware|product_aware"
+        "demographics": "Specific profile",
+        "psychographics": "Values and interests",
+        "awareness_level": "awareness level"
     }},
     "funnel_stage": "TOFU|MOFU|BOFU",
-    "funnel_reasoning": "Pourquoi cette étape",
+    "funnel_reasoning": "Why this stage",
+    "visual_theme": "One of the themes above",
     "score": 7,
     "score_breakdown": {{
         "clarity": 8,
         "cta_relevance": 7,
-        "creative_coherence": 6
+        "creative_coherence": 7,
+        "competitive_edge": 6
     }},
-    "key_insight": "L'insight stratégique le plus important"
+    "key_insight": "Strategic takeaway"
 }}

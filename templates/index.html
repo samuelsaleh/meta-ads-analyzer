@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Ads Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="landing">
+        <div class="landing-content">
+            <h1>Meta Ads Analyzer</h1>
+            <p class="subtitle">Analyze any brand's Meta ads with AI-powered insights</p>
+
+            <form action="/analyze" method="POST" class="analyze-form" id="analyzeForm">
+                <div class="form-group">
+                    <label for="brand">Brand Name</label>
+                    <input
+                        type="text"
+                        id="brand"
+                        name="brand"
+                        placeholder="e.g., Nike, Apple, Notion..."
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <select id="country" name="country">
+                            <option value="ALL">All Countries</option>
+                            <option value="US">United States</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="FR">France</option>
+                            <option value="DE">Germany</option>
+                            <option value="ES">Spain</option>
+                            <option value="IT">Italy</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="max_ads">Max Ads</label>
+                        <input
+                            type="number"
+                            id="max_ads"
+                            name="max_ads"
+                            value="10"
+                            min="1"
+                            max="50"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    <span class="btn-text">Analyze Ads</span>
+                    <span class="btn-loading">
+                        <span class="spinner"></span>
+                        <span id="progressText">Starting...</span>
+                    </span>
+                </button>
+            </form>
+
+            <div id="progressLog" class="progress-log" style="display: none;">
+                <div class="progress-header">Progress Log</div>
+                <div id="logContent"></div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Auto Extraction</h3>
+                    <p>Automatically scrapes active ads from Meta Ad Library</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Analysis</h3>
+                    <p>Hook type, audience, funnel stage, and score for each ad</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h3>Pro Reports</h3>
+                    <p>Strategic insights and actionable recommendations</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>How it works:</strong> Enter a brand name, and we'll extract their active Meta ads, analyze each one with AI, and generate a professional report with strategic insights.</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .progress-log {
+            margin-top: 24px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .progress-header {
+            color: #f4c430;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+        #logContent {
+            color: #a0a0a0;
+        }
+        .log-line {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .log-line.active {
+            color: #00ff88;
+        }
+        .log-line.done {
+            color: #888;
+        }
+        .log-line .icon {
+            width: 16px;
+            text-align: center;
+        }
+        .log-line.active .icon::after {
+            content: "⏳";
+        }
+        .log-line.done .icon::after {
+            content: "✓";
+            color: #00ff88;
+        }
+        .log-time {
+            color: #666;
+            font-size: 0.75rem;
+        }
+    </style>
+    <script>
+        const form = document.getElementById('analyzeForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        const progressText = document.getElementById('progressText');
+        const progressLog = document.getElementById('progressLog');
+        const logContent = document.getElementById('logContent');
+
+        const steps = [
+            { text: 'Opening browser...', duration: 3000 },
+            { text: 'Navigating to Meta Ad Library...', duration: 4000 },
+            { text: 'Searching for brand...', duration: 5000 },
+            { text: 'Selecting advertiser...', duration: 4000 },
+            { text: 'Scrolling to load ads...', duration: 8000 },
+            { text: 'Extracting ad data...', duration: 10000 },
+            { text: 'Analyzing ads with AI...', duration: 20000 },
+            { text: 'Generating insights...', duration: 5000 },
+            { text: 'Creating report...', duration: 3000 }
+        ];
+
+        let currentStep = 0;
+        let stepInterval;
+        let startTime;
+
+        function addLogLine(text, isActive = true) {
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `log-line ${isActive ? 'active' : 'done'}`;
+            line.innerHTML = `<span class="icon"></span><span>${text}</span><span class="log-time">${time}</span>`;
+            logContent.appendChild(line);
+            logContent.scrollTop = logContent.scrollHeight;
+            return line;
+        }
+
+        function updateProgress() {
+            if (currentStep > 0) {
+                const prevLines = logContent.querySelectorAll('.log-line.active');
+                prevLines.forEach(line => {
+                    line.classList.remove('active');
+                    line.classList.add('done');
+                });
+            }
+
+            if (currentStep < steps.length) {
+                const step = steps[currentStep];
+                progressText.textContent = step.text;
+                addLogLine(step.text, true);
+                currentStep++;
+                
+                stepInterval = setTimeout(updateProgress, step.duration);
+            } else {
+                progressText.textContent = 'Finalizing... almost done!';
+                addLogLine('Waiting for server response...', true);
+            }
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            
+            // Show progress log
+            progressLog.style.display = 'block';
+            logContent.innerHTML = '';
+            currentStep = 0;
+            startTime = Date.now();
+            
+            addLogLine('🚀 Analysis started', true);
+            setTimeout(updateProgress, 1000);
+            
+            // Submit form via fetch
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                clearTimeout(stepInterval);
+                
+                if (response.ok) {
+                    // Mark all steps as done
+                    const activeLines = logContent.querySelectorAll('.log-line.active');
+                    activeLines.forEach(line => {
+                        line.classList.remove('active');
+                        line.classList.add('done');
+                    });
+                    
+                    addLogLine('✅ Report ready! Downloading...', false);
+                    progressText.textContent = 'Complete!';
+                    
+                    // Get the filename from response headers
+                    const contentDisposition = response.headers.get('content-disposition');
+                    let filename = 'report.html';
+                    if (contentDisposition) {
+                        const match = contentDisposition.match(/filename="?(.+)"?/);
+                        if (match) filename = match[1];
+                    }
+                    
+                    // Download the file
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    
+                    // Show success state
+                    const elapsed = Math.round((Date.now() - startTime) / 1000);
+                    addLogLine(`🎉 Done in ${elapsed} seconds!`, false);
+                    
+                    // Reset button after delay
+                    setTimeout(() => {
+                        btnText.style.display = 'inline';
+                        btnLoading.style.display = 'none';
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
+                        progressText.textContent = 'Starting...';
+                    }, 3000);
+                    
+                } else {
+                    const text = await response.text();
+                    addLogLine('❌ Error: ' + text.substring(0, 100), false);
+                    progressText.textContent = 'Error occurred';
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                clearTimeout(stepInterval);
+                addLogLine('❌ Network error: ' + error.message, false);
+                progressText.textContent = 'Error occurred';
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

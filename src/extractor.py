@@ -9,6 +9,7 @@ import json
 import asyncio
 from datetime import datetime
 from typing import Optional
+from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
 from browser_use import Agent
@@ -30,7 +31,9 @@ class MetaAdsExtractor:
     def _build_url(self, brand: str, country: str = "ALL") -> str:
         """Construit l'URL de Meta Ad Library"""
         base = "https://www.facebook.com/ads/library/"
-        params = f"?active_status=active&ad_type=all&country={country}&q={brand}"
+        # URL-encode brand name to handle spaces and special characters
+        encoded_brand = quote_plus(brand)
+        params = f"?active_status=active&ad_type=all&country={country}&q={encoded_brand}"
         return base + params
 
     def _build_extraction_task(self, brand: str, url: str, country: str, max_ads: int = 30) -> str:
@@ -39,23 +42,36 @@ class MetaAdsExtractor:
 
 If a cookie popup appears, click "Decline optional cookies".
 
-Wait 3 seconds for ads to load.
+STEP 1 - SELECT THE ADVERTISER:
+The search results show ads from MANY advertisers. You MUST select the specific advertiser:
+1. Click inside the search box to trigger the dropdown
+2. Look for "Advertisers" section in the dropdown
+3. Click on the advertiser that matches "{brand}" (look for the one with follower count or verified badge)
+4. Wait for the page to reload with ONLY that advertiser's ads
 
-Scroll down slowly 5 times, waiting 2 seconds between scrolls, to load more ads.
+STEP 2 - LOAD ALL ADS:
+Scroll down the page slowly and thoroughly:
+- Scroll down, wait 3 seconds
+- Repeat at least 10 times
+- Keep scrolling until you see no more new ads loading
+- The goal is to load ALL available ads on the page
 
-Extract ALL ads visible (up to {max_ads}) that contain "{brand}" in the advertiser name.
+STEP 3 - EXTRACT ALL ADS:
+Look at the page and count how many ad cards are visible. 
+Extract up to {max_ads} ads. For EACH ad card you see, extract:
 
-For EACH ad, extract these details:
-- advertiser: exact advertiser name shown
-- primary_text: the main ad copy text
-- headline: the bold headline/title
-- cta: call-to-action button text (Shop Now, Learn More, Book Now, Get Directions, etc.)
-- format: Video, Static Image, or Carousel
-- first_seen: the start date shown (format: YYYY-MM-DD)
-- platforms: list of platform icons visible (facebook, instagram, messenger, audience_network)
+- advertiser: the advertiser name (e.g., "Arte")
+- primary_text: the ad copy text shown on the ad card (e.g., "Spring/Summer '26")
+- headline: any headline text visible
+- cta: the button text (e.g., "Shop Now")
+- format: "Video" if it has a play button, otherwise "Static Image" or "Carousel"
+- first_seen: the date shown (convert to YYYY-MM-DD format, e.g., "17 jan 2026" → "2026-01-17")
+- platforms: look at the platform icons (Facebook, Instagram icons)
 
-Return ONLY this JSON:
-{{"brand": "{brand}", "market": "{country}", "platform": "Meta", "total_ads": X, "ads": [{{"id": 1, "advertiser": "...", "primary_text": "...", "headline": "...", "cta": "...", "format": "...", "first_seen": "YYYY-MM-DD", "platforms": ["facebook", "instagram"]}}]}}"""
+CRITICAL: Extract EVERY ad you can see, not just the first one. If you see 16 ads, extract all 16 (up to {max_ads}).
+
+Return this JSON format:
+{{"brand": "{brand}", "market": "{country}", "platform": "Meta", "total_ads": NUMBER_OF_ADS_EXTRACTED, "ads": [{{"id": 1, "advertiser": "...", "primary_text": "...", "headline": "...", "cta": "...", "format": "...", "first_seen": "YYYY-MM-DD", "platforms": ["facebook", "instagram"]}}, {{"id": 2, ...}}, ...]}}"""
 
     async def extract(
         self,
@@ -89,32 +105,58 @@ Return ONLY this JSON:
             # Extraire le contenu du résultat
             result = None
 
+            # Helper to parse JSON safely (handles truncated/malformed JSON)
+            def try_parse_json(content: str) -> dict | None:
+                if not content:
+                    return None
+                # Find JSON boundaries
+                json_start = content.find("{")
+                if json_start == -1:
+                    return None
+                    
+                # Try to find matching closing brace
+                brace_count = 0
+                json_end = -1
+                for i, char in enumerate(content[json_start:], json_start):
+                    if char == "{":
+                        brace_count += 1
+                    elif char == "}":
+                        brace_count -= 1
+                        if brace_count == 0:
+                            json_end = i + 1
+                            break
+                
+                if json_end == -1:
+                    json_end = content.rfind("}") + 1
+                
+                if json_end > json_start:
+                    try:
+                        return json.loads(content[json_start:json_end])
+                    except json.JSONDecodeError:
+                        # Try to fix common issues
+                        json_str = content[json_start:json_end]
+                        # Remove trailing commas before ] or }
+                        import re
+                        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+                        try:
+                            return json.loads(json_str)
+                        except json.JSONDecodeError:
+                            return None
+                return None
+
             # Essayer d'abord le résultat final
             final = history.final_result()
             if final:
-                content = final
-                json_start = content.find("{")
-                json_end = content.rfind("}") + 1
-                if json_start != -1 and json_end > json_start:
-                    try:
-                        result = json.loads(content[json_start:json_end])
-                    except json.JSONDecodeError:
-                        pass
+                result = try_parse_json(final)
 
             # Sinon, parcourir les résultats d'actions
             if result is None:
                 for action_result in history.action_results():
                     if action_result.extracted_content:
-                        content = action_result.extracted_content
-                        json_start = content.find("{")
-                        json_end = content.rfind("}") + 1
-                        if json_start != -1 and json_end > json_start:
-                            try:
-                                result = json.loads(content[json_start:json_end])
-                                if "ads" in result:
-                                    break
-                            except json.JSONDecodeError:
-                                continue
+                        parsed = try_parse_json(action_result.extracted_content)
+                        if parsed and "ads" in parsed:
+                            result = parsed
+                            break
 
             # Si pas de JSON trouvé, créer un résultat vide
             if result is None:

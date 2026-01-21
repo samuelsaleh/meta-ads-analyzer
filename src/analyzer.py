@@ -1,6 +1,6 @@
 """
 src/analyzer.py
-Module d'analyse stratégique des publicités avec Claude
+Module d'analyse stratégique des publicités avec GPT-4
 """
 
 import os
@@ -10,7 +10,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from openai import OpenAI
 
 load_dotenv()
 
@@ -38,11 +38,11 @@ def sanitize_text(text: str, max_length: int = 2000) -> str:
 
 
 class AdsAnalyzer:
-    """Analyseur stratégique de publicités avec Claude"""
+    """Analyseur stratégique de publicités avec GPT-4"""
 
     def __init__(self):
-        self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        self.model = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.model = os.getenv("OPENAI_ANALYSIS_MODEL", "gpt-4o")
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
@@ -71,7 +71,7 @@ class AdsAnalyzer:
 
     def analyze_ad(self, ad: dict, brand: str, market: str = "ALL") -> dict:
         """
-        Analyse une seule publicité
+        Analyse une seule publicité avec GPT-4
 
         Args:
             ad: Données de la publicité
@@ -84,10 +84,14 @@ class AdsAnalyzer:
         prompt = self._format_prompt(ad, brand, market)
 
         try:
-            response = self.client.messages.create(
+            response = self.client.chat.completions.create(
                 model=self.model,
                 max_tokens=1024,
                 messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an expert advertising strategist. Always respond with valid JSON only, no markdown formatting."
+                    },
                     {
                         "role": "user",
                         "content": prompt
@@ -96,7 +100,7 @@ class AdsAnalyzer:
             )
 
             # Extraire le JSON de la réponse
-            content = response.content[0].text
+            content = response.choices[0].message.content
             json_start = content.find("{")
             json_end = content.rfind("}") + 1
 
@@ -126,10 +130,23 @@ class AdsAnalyzer:
 
         analyzed_ads = []
         total_score = 0
+        
+        # Distribution tracking
         hook_types = {}
         funnel_stages = {}
-        market_strategies = {}
+        message_strategies = {}
+        headline_themes = {}
+        visual_themes = {}
         languages = {}
+        formats = {}
+        ctas = {}
+        
+        # Unique variations tracking
+        unique_primary_texts = set()
+        unique_headlines = set()
+        
+        # Timeline tracking
+        timeline = {}
 
         print(f"Analyse de {len(ads)} publicités pour {brand} (market: {market})...")
 
@@ -140,8 +157,30 @@ class AdsAnalyzer:
             # Combiner les données originales avec l'analyse
             analyzed_ad = {**ad, "analysis": analysis}
             analyzed_ads.append(analyzed_ad)
+            
+            # Track unique variations (raw data)
+            primary_text = ad.get("primary_text", ad.get("text", ""))
+            headline = ad.get("headline", "")
+            if primary_text:
+                unique_primary_texts.add(primary_text[:200])  # Truncate for comparison
+            if headline:
+                unique_headlines.add(headline)
+            
+            # Track format distribution
+            fmt = ad.get("format", "Unknown")
+            formats[fmt] = formats.get(fmt, 0) + 1
+            
+            # Track CTA distribution
+            cta = ad.get("cta", "Unknown")
+            ctas[cta] = ctas.get(cta, 0) + 1
+            
+            # Track timeline
+            first_seen = ad.get("first_seen", "")
+            if first_seen:
+                month = first_seen[:7]  # YYYY-MM
+                timeline[month] = timeline.get(month, 0) + 1
 
-            # Statistiques
+            # Analysis-based statistics
             if "error" not in analysis:
                 score = analysis.get("score", 0)
                 total_score += score
@@ -152,8 +191,14 @@ class AdsAnalyzer:
                 funnel = analysis.get("funnel_stage", "UNKNOWN")
                 funnel_stages[funnel] = funnel_stages.get(funnel, 0) + 1
 
-                strategy = analysis.get("market_strategy", "UNKNOWN")
-                market_strategies[strategy] = market_strategies.get(strategy, 0) + 1
+                msg_strategy = analysis.get("message_strategy", "UNKNOWN")
+                message_strategies[msg_strategy] = message_strategies.get(msg_strategy, 0) + 1
+                
+                hl_theme = analysis.get("headline_theme", "UNKNOWN")
+                headline_themes[hl_theme] = headline_themes.get(hl_theme, 0) + 1
+                
+                vis_theme = analysis.get("visual_theme", "UNKNOWN")
+                visual_themes[vis_theme] = visual_themes.get(vis_theme, 0) + 1
 
                 lang = analysis.get("language", "UNKNOWN")
                 languages[lang] = languages.get(lang, 0) + 1
@@ -166,12 +211,21 @@ class AdsAnalyzer:
             **extraction_result,
             "ads": analyzed_ads,
             "analysis_summary": {
+                "total_analyzed": num_ads,
                 "average_score": avg_score,
+                "unique_primary_texts": len(unique_primary_texts),
+                "unique_headlines": len(unique_headlines),
                 "hook_distribution": hook_types,
                 "funnel_distribution": funnel_stages,
-                "market_strategy_distribution": market_strategies,
+                "message_strategy_distribution": message_strategies,
+                "headline_theme_distribution": headline_themes,
+                "visual_theme_distribution": visual_themes,
                 "language_distribution": languages,
-                "total_analyzed": num_ads
+                "format_distribution": formats,
+                "cta_distribution": ctas,
+                "timeline_distribution": timeline,
+                "primary_text_list": list(unique_primary_texts),
+                "headline_list": list(unique_headlines)
             }
         }
 
@@ -182,16 +236,28 @@ class AdsAnalyzer:
         summary = analyzed_result.get("analysis_summary", {})
         ads = analyzed_result.get("ads", [])
         brand = analyzed_result.get("brand", "Unknown")
+        market = analyzed_result.get("market", "ALL")
 
-        # Trouver les dominants
+        # Helper to get dominant from distribution
+        def get_dominant(dist):
+            return max(dist, key=dist.get) if dist else "N/A"
+        
+        # Get all distributions
         hooks = summary.get("hook_distribution", {})
-        dominant_hook = max(hooks, key=hooks.get) if hooks else "N/A"
-
         funnels = summary.get("funnel_distribution", {})
-        dominant_funnel = max(funnels, key=funnels.get) if funnels else "N/A"
-
-        strategies = summary.get("market_strategy_distribution", {})
-        dominant_strategy = max(strategies, key=strategies.get) if strategies else "N/A"
+        msg_strategies = summary.get("message_strategy_distribution", {})
+        hl_themes = summary.get("headline_theme_distribution", {})
+        vis_themes = summary.get("visual_theme_distribution", {})
+        formats = summary.get("format_distribution", {})
+        ctas = summary.get("cta_distribution", {})
+        timeline = summary.get("timeline_distribution", {})
+        
+        # Calculate format percentages
+        total_ads = sum(formats.values()) if formats else 0
+        format_percentages = {
+            fmt: round((count / total_ads) * 100) if total_ads > 0 else 0
+            for fmt, count in formats.items()
+        }
 
         # Top 3 publicités par score
         sorted_ads = sorted(
@@ -200,31 +266,114 @@ class AdsAnalyzer:
             reverse=True
         )
         top_ads = sorted_ads[:3]
+        
+        # Build strategic insights list
+        strategic_insights = []
+        
+        # Hook insight
+        dominant_hook = get_dominant(hooks)
+        if dominant_hook != "N/A":
+            hook_count = hooks.get(dominant_hook, 0)
+            hook_pct = round((hook_count / total_ads) * 100) if total_ads > 0 else 0
+            strategic_insights.append(f"{brand} uses {dominant_hook} hooks in {hook_pct}% of their ads, focusing on {dominant_hook.lower().replace('_', ' ')} messaging to engage their audience.")
+        
+        # Message strategy insight
+        dominant_msg = get_dominant(msg_strategies)
+        if dominant_msg != "N/A":
+            strategic_insights.append(f"Primary messaging approach: '{dominant_msg}' - this indicates a focus on {dominant_msg.lower()} communication.")
+        
+        # Funnel insight
+        dominant_funnel = get_dominant(funnels)
+        if dominant_funnel != "N/A":
+            funnel_desc = {
+                "TOFU": "brand awareness and discovery",
+                "MOFU": "consideration and evaluation",
+                "BOFU": "conversion and direct action"
+            }.get(dominant_funnel, dominant_funnel.lower())
+            strategic_insights.append(f"Campaign targets {dominant_funnel} stage - optimized for {funnel_desc}.")
+        
+        # Format insight
+        dominant_format = get_dominant(formats)
+        if dominant_format != "N/A":
+            format_pct = format_percentages.get(dominant_format, 0)
+            strategic_insights.append(f"Creative format: {format_pct}% {dominant_format} - indicates {('rapid A/B testing approach' if dominant_format == 'Static Image' else 'investment in high-impact content')}.")
+        
+        # Testing velocity insight
+        unique_texts = summary.get("unique_primary_texts", 0)
+        unique_hls = summary.get("unique_headlines", 0)
+        if total_ads > 0 and unique_texts > 0:
+            strategic_insights.append(f"Testing velocity: {total_ads} ads with {unique_texts} unique message variations and {unique_hls} headline variations.")
 
         return {
             "brand": brand,
+            "market": market,
             "executive_summary": {
-                "total_ads": len(ads),
+                "total_ads": total_ads,
+                "unique_creatives": unique_texts,
+                "unique_headlines": unique_hls,
                 "average_score": summary.get("average_score", 0),
                 "dominant_hook": dominant_hook,
                 "dominant_funnel_stage": dominant_funnel,
-                "dominant_market_strategy": dominant_strategy
+                "dominant_message_strategy": dominant_msg,
+                "dominant_headline_theme": get_dominant(hl_themes),
+                "dominant_visual_theme": get_dominant(vis_themes)
             },
-            "strategic_insights": [
-                f"La marque {brand} utilise principalement des hooks de type {dominant_hook}",
-                f"Stratégie dominante: {dominant_strategy}",
-                f"La majorité des publicités ciblent l'étape {dominant_funnel} du funnel",
-                f"Score moyen des créatifs: {summary.get('average_score', 0)}/10"
-            ],
+            "format_distribution": formats,
+            "format_percentages": format_percentages,
+            "cta_distribution": ctas,
+            "timeline_distribution": timeline,
+            "hook_distribution": hooks,
+            "funnel_distribution": funnels,
+            "message_strategy_distribution": msg_strategies,
+            "headline_theme_distribution": hl_themes,
+            "primary_text_list": summary.get("primary_text_list", []),
+            "headline_list": summary.get("headline_list", []),
+            "strategic_insights": strategic_insights,
             "top_performing_ads": [
                 {
-                    "text_preview": ad.get("primary_text", ad.get("text", ""))[:100] + "...",
+                    "id": ad.get("id", i+1),
+                    "primary_text": ad.get("primary_text", ad.get("text", ""))[:150],
+                    "headline": ad.get("headline", ""),
+                    "cta": ad.get("cta", ""),
+                    "format": ad.get("format", ""),
+                    "first_seen": ad.get("first_seen", ""),
                     "score": ad.get("analysis", {}).get("score", 0),
+                    "hook_type": ad.get("analysis", {}).get("hook_type", ""),
+                    "message_strategy": ad.get("analysis", {}).get("message_strategy", ""),
                     "key_insight": ad.get("analysis", {}).get("key_insight", "N/A")
                 }
-                for ad in top_ads
-            ]
+                for i, ad in enumerate(top_ads)
+            ],
+            "recommendations": self._generate_recommendations(summary, brand, dominant_hook, dominant_funnel, dominant_msg)
         }
+    
+    def _generate_recommendations(self, summary, brand, hook, funnel, msg_strategy):
+        """Generate actionable recommendations based on the analysis"""
+        recs = []
+        
+        # Based on hook type
+        if hook == "URGENCY":
+            recs.append("Consider testing EMOTIONAL or SOCIAL_PROOF hooks to diversify messaging and reduce audience fatigue from urgency tactics.")
+        elif hook == "EMOTIONAL":
+            recs.append("Test adding VALUE_ANCHOR messaging to complement emotional appeal with concrete benefits.")
+        elif hook == "RATIONAL":
+            recs.append("Consider adding SOCIAL_PROOF elements (testimonials, reviews) to build trust alongside rational arguments.")
+        
+        # Based on funnel stage
+        if funnel == "TOFU":
+            recs.append("For TOFU-focused campaigns, consider creating MOFU content to nurture awareness into consideration.")
+        elif funnel == "BOFU":
+            recs.append("Strong conversion focus. Ensure retargeting and TOFU awareness campaigns support the funnel.")
+        
+        # Based on format distribution
+        formats = summary.get("format_distribution", {})
+        if formats.get("Video", 0) == 0:
+            recs.append("No video content detected. Consider testing video ads for higher engagement, especially testimonials.")
+        
+        # General recommendation
+        recs.append(f"Monitor {brand}'s creative evolution and landing page strategies for competitive intelligence updates.")
+        
+        return recs
 
     def export_csv(self, analyzed_result: dict, output_path: str = None) -> str:
         """

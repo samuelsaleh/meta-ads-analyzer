@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,319 +7,710 @@
     <style>
         :root {
             --primary: #1a1a2e;
-            --secondary: #e8b931;
+            --secondary: #f4c430;
+            --accent: #00b4d8;
             --background: #f8f9fa;
             --card: #ffffff;
-            --text: #333333;
-            --muted: #6c757d;
-            --success: #28a745;
-            --border: #dee2e6;
+            --text: #2d3436;
+            --muted: #636e72;
+            --success: #00b894;
+            --border: #dfe6e9;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text);
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
         /* Header */
         .header {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #16213e 100%);
             color: white;
             padding: 60px 0;
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        .header .subtitle {
-            opacity: 0.8;
-            font-size: 1.1rem;
-        }
+        .header h1 { font-size: 3rem; margin-bottom: 8px; font-weight: 700; }
+        .header .subtitle { opacity: 0.85; font-size: 1.1rem; }
+        .header .meta { margin-top: 16px; opacity: 0.7; font-size: 0.9rem; }
 
         /* Stats Bar */
         .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 40px 0;
             background: white;
             border-bottom: 1px solid var(--border);
+            padding: 32px 0;
         }
 
-        .stat-item {
-            text-align: center;
-            padding: 20px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .stat-item { text-align: center; padding: 16px 8px; }
+        .stat-number { font-size: 2rem; font-weight: 700; color: var(--secondary); }
+        .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+        /* Sections */
+        section { padding: 48px 0; }
+        section:nth-child(even) { background: white; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .section-number {
+            background: var(--secondary);
+            color: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            color: var(--secondary);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Section */
-        section {
-            padding: 40px 0;
+            font-size: 1rem;
         }
 
         section h2 {
-            font-size: 1.75rem;
-            margin-bottom: 30px;
+            font-size: 1.5rem;
             color: var(--primary);
-            border-bottom: 3px solid var(--secondary);
-            padding-bottom: 10px;
-            display: inline-block;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        /* Executive Summary */
+        .exec-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 2px solid var(--secondary);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .exec-summary h3 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .exec-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .exec-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .exec-point-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Distribution Tables */
+        .dist-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dist-table th, .dist-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dist-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .dist-table tr:hover { background: #f8f9fa; }
+
+        .dist-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .dist-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            border-radius: 4px;
+        }
+
+        /* Message Strategy Cards */
+        .message-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .message-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .message-card-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .message-card-count {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .message-card-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            font-style: italic;
+        }
+
+        /* Headline Pills */
+        .headline-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .headline-pill {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .headline-pill:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 2px 8px rgba(244, 196, 48, 0.2);
+        }
+
+        /* Timeline */
+        .timeline-bar {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            height: 200px;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timeline-bar-fill {
+            width: 60px;
+            background: linear-gradient(180deg, var(--secondary), var(--accent));
+            border-radius: 8px 8px 0 0;
+            min-height: 20px;
+        }
+
+        .timeline-label {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .timeline-count {
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 4px;
         }
 
         /* Ad Cards */
         .ads-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
         }
 
         .ad-card {
-            background: var(--card);
+            background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .ad-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
 
         .ad-card-header {
             background: var(--primary);
             color: white;
-            padding: 15px 20px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .ad-card-header .ad-number {
-            font-weight: 600;
-        }
+        .ad-card-header .ad-id { font-weight: 600; }
 
-        .ad-card-header .ad-score {
+        .ad-score {
             background: var(--secondary);
             color: var(--primary);
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-weight: 700;
         }
 
-        .ad-card-body {
-            padding: 20px;
-        }
+        .ad-card-body { padding: 20px; }
 
         .ad-text {
             font-size: 0.95rem;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             color: var(--text);
+            line-height: 1.5;
+        }
+
+        .ad-headline {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
         }
 
         .ad-meta {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .tag {
             display: inline-block;
             padding: 4px 12px;
-            background: #e9ecef;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 500;
         }
 
-        .tag.hook {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .tag.funnel {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .tag.cta {
-            background: var(--secondary);
-            color: var(--primary);
-        }
+        .tag.format { background: #e0f7fa; color: #00838f; }
+        .tag.cta { background: var(--secondary); color: var(--primary); }
+        .tag.hook { background: #fff3e0; color: #e65100; }
+        .tag.funnel { background: #e8f5e9; color: #2e7d32; }
+        .tag.strategy { background: #f3e5f5; color: #7b1fa2; }
+        .tag.date { background: #eceff1; color: #546e7a; }
 
         .ad-insight {
-            background: #f8f9fa;
-            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            padding: 16px;
             border-radius: 8px;
             font-size: 0.875rem;
             border-left: 3px solid var(--secondary);
+            margin-top: 12px;
         }
 
-        /* Insights Section */
-        .insights-grid {
+        .ad-insight strong { color: var(--primary); }
+
+        /* Score Breakdown */
+        .score-breakdown {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
         }
 
-        .insight-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        .score-item {
+            text-align: center;
+            font-size: 0.75rem;
         }
 
-        .insight-card h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.1rem;
+        .score-item-value {
+            font-weight: 700;
+            color: var(--secondary);
+            font-size: 1rem;
         }
 
-        .insight-card ul {
+        .score-item-label {
+            color: var(--muted);
+        }
+
+        /* Recommendations */
+        .rec-list {
             list-style: none;
         }
 
-        .insight-card li {
-            padding: 8px 0;
+        .rec-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px 0;
             border-bottom: 1px solid var(--border);
         }
 
-        .insight-card li:last-child {
-            border-bottom: none;
+        .rec-item:last-child { border-bottom: none; }
+
+        .rec-number {
+            width: 28px;
+            height: 28px;
+            background: var(--secondary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
         /* Footer */
         footer {
             background: var(--primary);
             color: white;
-            padding: 30px 0;
+            padding: 40px 0;
             text-align: center;
-            margin-top: 40px;
+            margin-top: 48px;
         }
 
-        footer p {
-            opacity: 0.8;
-            font-size: 0.875rem;
-        }
+        footer p { opacity: 0.8; font-size: 0.875rem; margin-bottom: 8px; }
 
-        /* Print styles */
+        /* Print */
         @media print {
-            .header {
-                padding: 30px 0;
-            }
-            .ad-card {
-                break-inside: avoid;
-            }
+            .header { padding: 30px 0; }
+            .ad-card { break-inside: avoid; }
+            section { padding: 24px 0; }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="container">
             <h1>{{ brand }}</h1>
-            <p class="subtitle">Ad Intelligence Report - {{ generation_date }}</p>
+            <p class="subtitle">Ad Intelligence Report</p>
+            <p class="meta">Market: {{ market }} | Generated: {{ generation_date }}</p>
         </div>
     </header>
 
+    <!-- Stats Bar -->
     <div class="stats-bar">
-        <div class="container" style="display: contents;">
-            <div class="stat-item">
-                <div class="stat-number">{{ total_ads }}</div>
-                <div class="stat-label">Publicites analysees</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ average_score }}/10</div>
-                <div class="stat-label">Score moyen</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ insights.executive_summary.dominant_hook }}</div>
-                <div class="stat-label">Hook dominant</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">{{ insights.executive_summary.dominant_funnel_stage }}</div>
-                <div class="stat-label">Etape funnel</div>
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_ads }}</div>
+                    <div class="stat-label">Total Ads</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ insights.executive_summary.unique_creatives | default(total_ads) }}</div>
+                    <div class="stat-label">Unique Creatives</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ insights.executive_summary.unique_headlines | default(0) }}</div>
+                    <div class="stat-label">Headline Variants</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ average_score }}/10</div>
+                    <div class="stat-label">Avg Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ insights.executive_summary.dominant_hook }}</div>
+                    <div class="stat-label">Primary Hook</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ insights.executive_summary.dominant_funnel_stage }}</div>
+                    <div class="stat-label">Funnel Stage</div>
+                </div>
             </div>
         </div>
     </div>
 
     <main class="container">
-        <section id="insights">
-            <h2>Insights Strategiques</h2>
-            <div class="insights-grid">
-                <div class="insight-card">
-                    <h3>Resume Executif</h3>
-                    <ul>
-                        {% for insight in insights.strategic_insights %}
-                        <li>{{ insight }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
 
-                <div class="insight-card">
-                    <h3>Distribution des Hooks</h3>
-                    <ul>
-                        {% for hook, count in hook_distribution.items() %}
-                        <li><strong>{{ hook }}:</strong> {{ count }} publicite(s)</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+        <!-- Section 1: Executive Summary -->
+        <section id="executive-summary">
+            <div class="section-header">
+                <span class="section-number">1</span>
+                <h2>Executive Summary</h2>
+            </div>
 
-                <div class="insight-card">
-                    <h3>Etapes du Funnel</h3>
-                    <ul>
-                        {% for stage, count in funnel_distribution.items() %}
-                        <li><strong>{{ stage }}:</strong> {{ count }} publicite(s)</li>
-                        {% endfor %}
-                    </ul>
+            <div class="exec-summary">
+                <h3>Key Campaign Insights</h3>
+                <div class="exec-points">
+                    {% for insight in insights.strategic_insights %}
+                    <div class="exec-point">
+                        <span class="exec-point-icon">✓</span>
+                        <span>{{ insight }}</span>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </section>
 
+        <!-- Section 2: Format Distribution -->
+        <section id="format-distribution">
+            <div class="section-header">
+                <span class="section-number">2</span>
+                <h2>Ad Format Distribution</h2>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <h3>Format Breakdown</h3>
+                    <table class="dist-table">
+                        <thead>
+                            <tr>
+                                <th>Format</th>
+                                <th>Count</th>
+                                <th>Share</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for format, count in insights.format_distribution.items() %}
+                            <tr>
+                                <td><strong>{{ format }}</strong></td>
+                                <td>{{ count }}</td>
+                                <td>
+                                    {{ insights.format_percentages[format] | default(0) }}%
+                                    <div class="dist-bar">
+                                        <div class="dist-bar-fill" style="width: {{ insights.format_percentages[format] | default(0) }}%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>CTA Distribution</h3>
+                    <table class="dist-table">
+                        <thead>
+                            <tr>
+                                <th>CTA Text</th>
+                                <th>Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cta, count in insights.cta_distribution.items() %}
+                            <tr>
+                                <td><span class="tag cta">{{ cta }}</span></td>
+                                <td>{{ count }} ad(s)</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Message Strategy -->
+        <section id="message-strategy">
+            <div class="section-header">
+                <span class="section-number">3</span>
+                <h2>Message Strategy Analysis</h2>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <h3>Hook Type Distribution</h3>
+                    <table class="dist-table">
+                        <thead>
+                            <tr>
+                                <th>Hook Type</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hook, count in insights.hook_distribution.items() %}
+                            <tr>
+                                <td><span class="tag hook">{{ hook }}</span></td>
+                                <td>{{ count }} ad(s)</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>Funnel Stage Distribution</h3>
+                    <table class="dist-table">
+                        <thead>
+                            <tr>
+                                <th>Stage</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stage, count in insights.funnel_distribution.items() %}
+                            <tr>
+                                <td><span class="tag funnel">{{ stage }}</span></td>
+                                <td>{{ count }} ad(s)</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if insights.message_strategy_distribution %}
+            <div class="card" style="margin-top: 24px;">
+                <h3>Primary Messaging Strategies</h3>
+                {% for strategy, count in insights.message_strategy_distribution.items() %}
+                <div class="message-card">
+                    <div class="message-card-header">
+                        <span class="message-card-label">{{ strategy }}</span>
+                        <span class="message-card-count">{{ count }} ad(s)</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Section 4: Headline Variations -->
+        {% if insights.headline_list %}
+        <section id="headlines">
+            <div class="section-header">
+                <span class="section-number">4</span>
+                <h2>Headline Variations ({{ insights.headline_list | length }} unique)</h2>
+            </div>
+
+            <div class="card">
+                <div class="headline-pills">
+                    {% for headline in insights.headline_list %}
+                    <div class="headline-pill">{{ headline }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Section 5: Timeline -->
+        {% if insights.timeline_distribution %}
+        <section id="timeline">
+            <div class="section-header">
+                <span class="section-number">5</span>
+                <h2>Campaign Timeline</h2>
+            </div>
+
+            <div class="card">
+                <h3>Ad Launch Distribution</h3>
+                <div class="timeline-bar">
+                    {% set max_count = insights.timeline_distribution.values() | max %}
+                    {% for month, count in insights.timeline_distribution.items() | sort %}
+                    <div class="timeline-item">
+                        <div class="timeline-bar-fill" style="height: {{ (count / max_count * 150) | int }}px"></div>
+                        <div class="timeline-label">{{ month }}</div>
+                        <div class="timeline-count">{{ count }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Section 6: Recommendations -->
+        {% if insights.recommendations %}
+        <section id="recommendations">
+            <div class="section-header">
+                <span class="section-number">6</span>
+                <h2>Key Takeaways & Recommendations</h2>
+            </div>
+
+            <div class="card">
+                <ul class="rec-list">
+                    {% for rec in insights.recommendations %}
+                    <li class="rec-item">
+                        <span class="rec-number">{{ loop.index }}</span>
+                        <span>{{ rec }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Section 7: Detailed Ad Analysis -->
         <section id="ads">
-            <h2>Analyse des Publicites</h2>
+            <div class="section-header">
+                <span class="section-number">7</span>
+                <h2>Detailed Ad Analysis</h2>
+            </div>
+
             <div class="ads-grid">
                 {% for ad in ads %}
                 <div class="ad-card">
                     <div class="ad-card-header">
-                        <span class="ad-number">Publicite #{{ loop.index }}</span>
+                        <span class="ad-id">Ad #{{ loop.index }}</span>
                         <span class="ad-score">{{ ad.analysis.score | default(0) }}/10</span>
                     </div>
                     <div class="ad-card-body">
-                        <p class="ad-text">{{ ad.text[:200] }}{% if ad.text|length > 200 %}...{% endif %}</p>
+                        {% if ad.headline %}
+                        <div class="ad-headline">{{ ad.headline }}</div>
+                        {% endif %}
+
+                        <p class="ad-text">{{ (ad.primary_text or ad.text or '')[:250] }}{% if (ad.primary_text or ad.text or '')|length > 250 %}...{% endif %}</p>
 
                         <div class="ad-meta">
-                            {% if ad.headline %}
-                            <span class="tag">{{ ad.headline[:30] }}{% if ad.headline|length > 30 %}...{% endif %}</span>
+                            {% if ad.format %}
+                            <span class="tag format">{{ ad.format }}</span>
                             {% endif %}
                             {% if ad.cta %}
                             <span class="tag cta">{{ ad.cta }}</span>
@@ -330,11 +721,38 @@
                             {% if ad.analysis.funnel_stage %}
                             <span class="tag funnel">{{ ad.analysis.funnel_stage }}</span>
                             {% endif %}
+                            {% if ad.analysis.message_strategy %}
+                            <span class="tag strategy">{{ ad.analysis.message_strategy }}</span>
+                            {% endif %}
+                            {% if ad.first_seen %}
+                            <span class="tag date">{{ ad.first_seen }}</span>
+                            {% endif %}
                         </div>
 
                         {% if ad.analysis.key_insight %}
                         <div class="ad-insight">
-                            <strong>Insight:</strong> {{ ad.analysis.key_insight }}
+                            <strong>Strategic Insight:</strong> {{ ad.analysis.key_insight }}
+                        </div>
+                        {% endif %}
+
+                        {% if ad.analysis.score_breakdown %}
+                        <div class="score-breakdown">
+                            <div class="score-item">
+                                <div class="score-item-value">{{ ad.analysis.score_breakdown.clarity | default('-') }}</div>
+                                <div class="score-item-label">Clarity</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-item-value">{{ ad.analysis.score_breakdown.cta_relevance | default('-') }}</div>
+                                <div class="score-item-label">CTA</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-item-value">{{ ad.analysis.score_breakdown.creative_coherence | default('-') }}</div>
+                                <div class="score-item-label">Coherence</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-item-value">{{ ad.analysis.score_breakdown.competitive_edge | default('-') }}</div>
+                                <div class="score-item-label">Edge</div>
+                            </div>
                         </div>
                         {% endif %}
                     </div>
@@ -342,12 +760,54 @@
                 {% endfor %}
             </div>
         </section>
+
+        <!-- Section 8: Appendix -->
+        <section id="appendix">
+            <div class="section-header">
+                <span class="section-number">8</span>
+                <h2>Appendix - Source Data</h2>
+            </div>
+
+            <div class="card">
+                <h3>Campaign Information</h3>
+                <table class="dist-table">
+                    <tbody>
+                        <tr>
+                            <td><strong>Brand</strong></td>
+                            <td>{{ brand }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Market</strong></td>
+                            <td>{{ market }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Platform</strong></td>
+                            <td>Meta (Facebook & Instagram)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Ads Analyzed</strong></td>
+                            <td>{{ total_ads }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Report Generated</strong></td>
+                            <td>{{ generation_date }} at {{ generation_time }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Data Source</strong></td>
+                            <td>Meta Ad Library</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
     </main>
 
     <footer>
         <div class="container">
-            <p>Rapport genere le {{ generation_date }} a {{ generation_time }}</p>
-            <p>Meta Ads Analyzer - Ad Intelligence Tool</p>
+            <p>Report generated on {{ generation_date }} at {{ generation_time }}</p>
+            <p>Meta Ads Analyzer - Competitive Intelligence Tool</p>
+            <p style="margin-top: 16px; font-size: 0.75rem;">Source: Meta Ad Library | Analysis powered by GPT-4</p>
         </div>
     </footer>
 </body>
