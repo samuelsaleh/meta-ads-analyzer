@@ -1,6 +1,6 @@
 """
 src/analyzer.py
-Module d'analyse stratégique des publicités avec GPT-4
+Module d'analyse stratégique des publicités avec Claude 4
 """
 
 import os
@@ -10,7 +10,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional
 from dotenv import load_dotenv
-from openai import OpenAI
+from anthropic import Anthropic
 
 load_dotenv()
 
@@ -38,11 +38,11 @@ def sanitize_text(text: str, max_length: int = 2000) -> str:
 
 
 class AdsAnalyzer:
-    """Analyseur stratégique de publicités avec GPT-4"""
+    """Analyseur stratégique de publicités avec Claude 4"""
 
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.model = os.getenv("OPENAI_ANALYSIS_MODEL", "gpt-4o")
+        self.client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        self.model = os.getenv("ANTHROPIC_ANALYSIS_MODEL", "claude-sonnet-4-20250514")
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
@@ -71,7 +71,7 @@ class AdsAnalyzer:
 
     def analyze_ad(self, ad: dict, brand: str, market: str = "ALL") -> dict:
         """
-        Analyse une seule publicité avec GPT-4
+        Analyse une seule publicité avec Claude 4
 
         Args:
             ad: Données de la publicité
@@ -84,14 +84,11 @@ class AdsAnalyzer:
         prompt = self._format_prompt(ad, brand, market)
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.messages.create(
                 model=self.model,
                 max_tokens=1024,
+                system="You are an expert advertising strategist. Always respond with valid JSON only, no markdown formatting.",
                 messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert advertising strategist. Always respond with valid JSON only, no markdown formatting."
-                    },
                     {
                         "role": "user",
                         "content": prompt
@@ -99,15 +96,24 @@ class AdsAnalyzer:
                 ]
             )
 
-            # Extraire le JSON de la réponse
-            content = response.choices[0].message.content
-            json_start = content.find("{")
-            json_end = content.rfind("}") + 1
+            # Extract JSON from response - Anthropic returns content as a list of TextBlock objects
+            content_text = ""
+            if response.content:
+                for block in response.content:
+                    if hasattr(block, 'text'):
+                        content_text += block.text
+                    elif isinstance(block, dict) and 'text' in block:
+                        content_text += block['text']
+                    elif isinstance(block, str):
+                        content_text += block
+            
+            json_start = content_text.find("{")
+            json_end = content_text.rfind("}") + 1
 
             if json_start != -1 and json_end > json_start:
-                analysis = json.loads(content[json_start:json_end])
+                analysis = json.loads(content_text[json_start:json_end])
             else:
-                analysis = {"error": "Could not parse JSON", "raw": content}
+                analysis = {"error": "Could not parse JSON", "raw": content_text}
 
             return analysis
 
@@ -229,10 +235,157 @@ class AdsAnalyzer:
             }
         }
 
+    def generate_strategic_narrative(self, analyzed_result: dict) -> dict:
+        """
+        Generates Notion-style strategic narrative interpretations for each section.
+        Creates executive-level insights that explain WHY campaign choices matter.
+        """
+        summary = analyzed_result.get("analysis_summary", {})
+        ads = analyzed_result.get("ads", [])
+        brand = analyzed_result.get("brand", "Unknown")
+        market = analyzed_result.get("market", "ALL")
+        
+        # Prepare data for narrative generation
+        total_ads = len(ads)
+        unique_creatives = summary.get("unique_primary_texts", 0)
+        unique_headlines = summary.get("unique_headlines", 0)
+        formats = summary.get("format_distribution", {})
+        format_percentages = {
+            fmt: round((count / total_ads) * 100) if total_ads > 0 else 0
+            for fmt, count in formats.items()
+        }
+        hooks = summary.get("hook_distribution", {})
+        funnels = summary.get("funnel_distribution", {})
+        msg_strategies = summary.get("message_strategy_distribution", {})
+        ctas = summary.get("cta_distribution", {})
+        timeline = summary.get("timeline_distribution", {})
+        headline_list = summary.get("headline_list", [])
+        
+        # Build comprehensive prompt for narrative generation
+        narrative_prompt = f"""You are a competitive intelligence analyst writing an executive strategic report about {brand}'s Meta advertising campaign in the {market} market.
+
+CAMPAIGN DATA:
+- Total ads deployed: {total_ads}
+- Unique creative variations: {unique_creatives}
+- Unique headline variations: {unique_headlines}
+- Format distribution: {json.dumps(format_percentages, ensure_ascii=False)}
+- Hook type distribution: {json.dumps(hooks, ensure_ascii=False)}
+- Funnel stage distribution: {json.dumps(funnels, ensure_ascii=False)}
+- Message strategy distribution: {json.dumps(msg_strategies, ensure_ascii=False)}
+- CTA distribution: {json.dumps(ctas, ensure_ascii=False)}
+- Timeline (ads by month): {json.dumps(timeline, ensure_ascii=False)}
+- Sample headlines: {', '.join(headline_list[:10]) if headline_list else 'N/A'}
+
+Generate strategic narrative interpretations in the style of a competitive intelligence presentation. Each section should:
+1. Explain WHAT the data shows
+2. Explain WHY it matters strategically
+3. Connect it to business objectives
+4. Provide competitive intelligence insights
+
+Write narrative paragraphs (2-4 sentences each) for these sections:
+
+1. EXECUTIVE_SUMMARY: High-level strategic overview highlighting the key takeaway about testing volume, approach, and focus.
+
+2. CAMPAIGN_OVERVIEW_METRICS: Interpretation of the testing velocity and strategy. What does the volume of ads and unique creatives reveal about their approach?
+
+3. AD_FORMAT_DISTRIBUTION: Why did they choose these formats? What does the format mix reveal about their testing strategy and budget allocation?
+
+4. PRIMARY_MESSAGING_STRATEGY: What messaging patterns reveal about their positioning and value proposition. Which strategies are they testing and why?
+
+5. HEADLINE_CREATIVE_VARIATIONS: Strategic analysis of headline testing. What patterns emerge? How do headlines support the messaging strategy?
+
+6. VISUAL_CREATIVE_THEMES: How visuals reinforce messaging (if data available).
+
+7. CAMPAIGN_TIMELINE_ANALYSIS: Strategic timing and deployment patterns. Why did activity peak at certain times? What business cycles does this align with?
+
+8. CALL_TO_ACTION_STRATEGY: Funnel optimization insights. What does the CTA strategy reveal about their conversion approach?
+
+9. KEY_TAKEAWAYS: Actionable competitive intelligence summary - what should we learn from this campaign?
+
+Return ONLY valid JSON with this structure:
+{{
+    "executive_summary": "narrative text",
+    "campaign_overview_metrics": "narrative text",
+    "ad_format_distribution": "narrative text",
+    "primary_messaging_strategy": "narrative text",
+    "headline_creative_variations": "narrative text",
+    "visual_creative_themes": "narrative text (or 'N/A' if insufficient data)",
+    "campaign_timeline_analysis": "narrative text",
+    "call_to_action_strategy": "narrative text",
+    "key_takeaways": "narrative text"
+}}"""
+
+        try:
+            response = self.client.messages.create(
+                model=self.model,
+                max_tokens=2048,
+                system="You are an expert competitive intelligence analyst. Write strategic narratives that explain business implications, not just data. Always respond with valid JSON only, no markdown formatting.",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": narrative_prompt
+                    }
+                ]
+            )
+
+            # Extract JSON from response - Anthropic returns content as a list of TextBlock objects
+            content_text = ""
+            if response.content:
+                for block in response.content:
+                    if hasattr(block, 'text'):
+                        content_text += block.text
+                    elif isinstance(block, dict) and 'text' in block:
+                        content_text += block['text']
+                    elif isinstance(block, str):
+                        content_text += block
+            
+            json_start = content_text.find("{")
+            json_end = content_text.rfind("}") + 1
+
+            if json_start != -1 and json_end > json_start:
+                narrative = json.loads(content_text[json_start:json_end])
+            else:
+                # Fallback to basic narratives if parsing fails
+                narrative = self._generate_fallback_narratives(summary, brand, market, total_ads, unique_creatives, formats, hooks, funnels, msg_strategies, ctas, timeline)
+            
+            return narrative
+
+        except Exception as e:
+            print(f"Error generating strategic narrative: {e}")
+            # Return fallback narratives
+            return self._generate_fallback_narratives(summary, brand, market, total_ads, unique_creatives, formats, hooks, funnels, msg_strategies, ctas, timeline)
+    
+    def _generate_fallback_narratives(self, summary, brand, market, total_ads, unique_creatives, formats, hooks, funnels, msg_strategies, ctas, timeline):
+        """Generate basic narrative interpretations if Claude API fails"""
+        format_percentages = {
+            fmt: round((count / total_ads) * 100) if total_ads > 0 else 0
+            for fmt, count in formats.items()
+        }
+        dominant_format = max(formats, key=formats.get) if formats else "N/A"
+        dominant_hook = max(hooks, key=hooks.get) if hooks else "N/A"
+        dominant_funnel = max(funnels, key=funnels.get) if funnels else "N/A"
+        dominant_msg = max(msg_strategies, key=msg_strategies.get) if msg_strategies else "N/A"
+        dominant_cta = max(ctas, key=ctas.get) if ctas else "N/A"
+        
+        return {
+            "executive_summary": f"The key takeaway from {brand}'s campaign in {market} is the testing volume: {total_ads} ads using {unique_creatives} unique creative variations. This indicates a systematic, data-driven approach to finding winning combinations before scaling budget.",
+            "campaign_overview_metrics": f"This high-volume, rapid-fire testing strategy is designed to quickly identify winning combinations. The {total_ads} ads and {unique_creatives} unique creatives show significant investment in A/B testing to optimize performance.",
+            "ad_format_distribution": f"{brand} heavily favored {dominant_format} format, which accounted for {format_percentages.get(dominant_format, 0)}% of all creatives. This makes sense because {dominant_format.lower()} formats are faster and cheaper to produce and iterate for A/B testing.",
+            "primary_messaging_strategy": f"The campaign tested multiple messaging strategies, with '{dominant_msg}' being the most common approach. This indicates a focus on {dominant_msg.lower()} positioning to engage their target audience.",
+            "headline_creative_variations": f"The headline testing reveals systematic pairing of key value propositions with clear calls to action. This consistent approach shows strategic thinking about how headlines support the overall messaging strategy.",
+            "visual_creative_themes": "Visual themes reinforce the messaging strategy, ensuring brand consistency across all creative variations.",
+            "campaign_timeline_analysis": f"The timeline analysis reveals deployment patterns that align with business cycles. Activity peaks suggest strategic timing to capture key decision-making periods.",
+            "call_to_action_strategy": f"{brand} uses a simplified CTA strategy, relying primarily on '{dominant_cta}' to drive conversions. This approach minimizes decision friction and focuses on clear action paths.",
+            "key_takeaways": f"This campaign reveals a systematic, data-driven approach. The core insight is that {brand} prioritizes creative velocity, testing aggressively to find winners before scaling spend. Monitor their creative evolution for competitive intelligence updates."
+        }
+
     def generate_insights(self, analyzed_result: dict) -> dict:
         """
-        Génère des insights globaux basés sur toutes les analyses
+        Génère des insights globaux basés sur toutes les analyses avec narratives stratégiques
         """
+        # Generate strategic narratives first
+        strategic_narratives = self.generate_strategic_narrative(analyzed_result)
+        
         summary = analyzed_result.get("analysis_summary", {})
         ads = analyzed_result.get("ads", [])
         brand = analyzed_result.get("brand", "Unknown")
@@ -329,6 +482,7 @@ class AdsAnalyzer:
             "primary_text_list": summary.get("primary_text_list", []),
             "headline_list": summary.get("headline_list", []),
             "strategic_insights": strategic_insights,
+            "strategic_narratives": strategic_narratives,  # Add narrative interpretations
             "top_performing_ads": [
                 {
                     "id": ad.get("id", i+1),

@@ -217,10 +217,17 @@
             const formData = new FormData(form);
             
             try {
+                // Create an AbortController for timeout management
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minutes timeout
+                
                 const response = await fetch('/analyze', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 clearTimeout(stepInterval);
                 
@@ -277,7 +284,13 @@
                 }
             } catch (error) {
                 clearTimeout(stepInterval);
-                addLogLine('❌ Network error: ' + error.message, false);
+                let errorMsg = 'Network error: ' + error.message;
+                if (error.name === 'AbortError') {
+                    errorMsg = 'Request timed out. The analysis is taking longer than expected. Please try again or check server logs.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMsg = 'Failed to connect to server. Please check if the server is running and try again.';
+                }
+                addLogLine('❌ ' + errorMsg, false);
                 progressText.textContent = 'Error occurred';
                 btnText.style.display = 'inline';
                 btnLoading.style.display = 'none';

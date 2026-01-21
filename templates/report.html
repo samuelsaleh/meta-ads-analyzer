@@ -392,6 +392,27 @@
             color: var(--muted);
         }
 
+        /* Strategic Narrative Blocks */
+        .narrative-block {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 24px 28px;
+            margin-bottom: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .narrative-block p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .narrative-block p:not(:last-child) {
+            margin-bottom: 16px;
+        }
+
         /* Recommendations */
         .rec-list {
             list-style: none;
@@ -490,6 +511,12 @@
                 <h2>Executive Summary</h2>
             </div>
 
+            {% if insights.strategic_narratives and insights.strategic_narratives.executive_summary %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.executive_summary }}</p>
+            </div>
+            {% endif %}
+
             <div class="exec-summary">
                 <h3>Key Campaign Insights</h3>
                 <div class="exec-points">
@@ -503,12 +530,32 @@
             </div>
         </section>
 
-        <!-- Section 2: Format Distribution -->
-        <section id="format-distribution">
+        <!-- Section 2: Campaign Overview Metrics -->
+        {% if insights.strategic_narratives and insights.strategic_narratives.campaign_overview_metrics %}
+        <section id="campaign-overview">
             <div class="section-header">
                 <span class="section-number">2</span>
+                <h2>Campaign Overview Metrics</h2>
+            </div>
+
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.campaign_overview_metrics }}</p>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Section 3: Format Distribution -->
+        <section id="format-distribution">
+            <div class="section-header">
+                <span class="section-number">3</span>
                 <h2>Ad Format Distribution</h2>
             </div>
+
+            {% if insights.strategic_narratives and insights.strategic_narratives.ad_format_distribution %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.ad_format_distribution }}</p>
+            </div>
+            {% endif %}
 
             <div class="cards-grid">
                 <div class="card">
@@ -540,6 +587,13 @@
 
                 <div class="card">
                     <h3>CTA Distribution</h3>
+                    {% if insights.strategic_narratives and insights.strategic_narratives.call_to_action_strategy %}
+                    <div style="padding: 16px 0; margin-bottom: 16px; border-bottom: 1px solid var(--border);">
+                        <p style="font-size: 0.9rem; line-height: 1.6; color: var(--text); font-style: italic;">
+                            {{ insights.strategic_narratives.call_to_action_strategy }}
+                        </p>
+                    </div>
+                    {% endif %}
                     <table class="dist-table">
                         <thead>
                             <tr>
@@ -560,12 +614,18 @@
             </div>
         </section>
 
-        <!-- Section 3: Message Strategy -->
+        <!-- Section 4: Message Strategy -->
         <section id="message-strategy">
             <div class="section-header">
-                <span class="section-number">3</span>
+                <span class="section-number">4</span>
                 <h2>Message Strategy Analysis</h2>
             </div>
+
+            {% if insights.strategic_narratives and insights.strategic_narratives.primary_messaging_strategy %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.primary_messaging_strategy }}</p>
+            </div>
+            {% endif %}
 
             <div class="cards-grid">
                 <div class="card">
@@ -624,13 +684,19 @@
             {% endif %}
         </section>
 
-        <!-- Section 4: Headline Variations -->
+        <!-- Section 5: Headline Variations -->
         {% if insights.headline_list %}
         <section id="headlines">
             <div class="section-header">
-                <span class="section-number">4</span>
+                <span class="section-number">5</span>
                 <h2>Headline Variations ({{ insights.headline_list | length }} unique)</h2>
             </div>
+
+            {% if insights.strategic_narratives and insights.strategic_narratives.headline_creative_variations %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.headline_creative_variations }}</p>
+            </div>
+            {% endif %}
 
             <div class="card">
                 <div class="headline-pills">
@@ -642,13 +708,19 @@
         </section>
         {% endif %}
 
-        <!-- Section 5: Timeline -->
+        <!-- Section 6: Timeline -->
         {% if insights.timeline_distribution %}
         <section id="timeline">
             <div class="section-header">
-                <span class="section-number">5</span>
+                <span class="section-number">6</span>
                 <h2>Campaign Timeline</h2>
             </div>
+
+            {% if insights.strategic_narratives and insights.strategic_narratives.campaign_timeline_analysis %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.campaign_timeline_analysis }}</p>
+            </div>
+            {% endif %}
 
             <div class="card">
                 <h3>Ad Launch Distribution</h3>
@@ -666,13 +738,19 @@
         </section>
         {% endif %}
 
-        <!-- Section 6: Recommendations -->
+        <!-- Section 7: Recommendations -->
         {% if insights.recommendations %}
         <section id="recommendations">
             <div class="section-header">
-                <span class="section-number">6</span>
+                <span class="section-number">7</span>
                 <h2>Key Takeaways & Recommendations</h2>
             </div>
+
+            {% if insights.strategic_narratives and insights.strategic_narratives.key_takeaways %}
+            <div class="narrative-block">
+                <p>{{ insights.strategic_narratives.key_takeaways }}</p>
+            </div>
+            {% endif %}
 
             <div class="card">
                 <ul class="rec-list">
@@ -687,10 +765,10 @@
         </section>
         {% endif %}
 
-        <!-- Section 7: Detailed Ad Analysis -->
+        <!-- Section 8: Detailed Ad Analysis -->
         <section id="ads">
             <div class="section-header">
-                <span class="section-number">7</span>
+                <span class="section-number">8</span>
                 <h2>Detailed Ad Analysis</h2>
             </div>
 
@@ -761,10 +839,10 @@
             </div>
         </section>
 
-        <!-- Section 8: Appendix -->
+        <!-- Section 9: Appendix -->
         <section id="appendix">
             <div class="section-header">
-                <span class="section-number">8</span>
+                <span class="section-number">9</span>
                 <h2>Appendix - Source Data</h2>
             </div>
 

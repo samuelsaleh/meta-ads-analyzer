@@ -9,6 +9,7 @@ Exposes the Meta Ads Analyzer as a web API with endpoints for:
 """
 
 import os
+import asyncio
 from pathlib import Path
 from datetime import datetime
 
@@ -155,8 +156,19 @@ async def analyze_brand(
             filename=f"{brand.lower().replace(' ', '_')}_report.html"
         )
         
+    except asyncio.TimeoutError:
+        print(f"✗ Timeout: Analysis took too long for '{brand}'")
+        error_msg = f"Analysis timed out for '{brand}'. The process is taking longer than expected. Please try with fewer ads or try again later."
+        return templates.TemplateResponse(
+            "error.html",
+            {"request": request, "error": error_msg},
+            status_code=504
+        )
     except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
         print(f"✗ Error: {str(e)}")
+        print(f"Traceback: {error_trace}")
         error_msg = f"An unexpected error occurred: {str(e)}"
         return templates.TemplateResponse(
             "error.html",

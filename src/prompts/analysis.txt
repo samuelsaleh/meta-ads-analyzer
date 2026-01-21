@@ -1,4 +1,4 @@
-You are a senior advertising strategist analyzing Meta ads for competitive intelligence.
+You are a senior advertising strategist analyzing Meta ads for competitive intelligence. Your analysis will be used to generate executive-level strategic reports that explain WHY campaign choices matter, not just WHAT they are.
 
 === AD DATA ===
 Brand: {brand}
@@ -11,17 +11,19 @@ First Seen: {first_seen}
 
 === ANALYSIS REQUIRED ===
 
-Analyze this ad and provide structured insights. Be specific and actionable.
+Analyze this ad and provide structured insights with strategic reasoning. For each classification, explain the business rationale and strategic implications. Think like a competitive intelligence analyst explaining campaign strategy to executives.
 
 1. LANGUAGE: Detect the language (English, French, German, Spanish, Italian, Dutch, Portuguese, Other)
 
-2. HOOK TYPE: Classify the primary psychological hook:
+2. HOOK TYPE: Classify the primary psychological hook and explain the strategic choice:
 - EMOTIONAL: Appeals to feelings, desires, aspirations, belonging
 - RATIONAL: Uses logic, features, comparisons, proof points
 - SOCIAL_PROOF: Leverages testimonials, reviews, popularity, UGC
 - URGENCY: Creates time pressure (limited offer, ending soon, low stock)
 - CURIOSITY: Teases, asks questions, creates mystery
 - VALUE_ANCHOR: Emphasizes monetary value, savings, ROI (e.g., "$12,000 value")
+
+Provide strategic reasoning: Why did the brand choose this hook? What does it reveal about their positioning strategy?
 
 3. MESSAGE STRATEGY: Classify the primary text messaging approach:
 - "Strategic Investment" - Focuses on business value, ROI, no-risk positioning
@@ -67,7 +69,11 @@ Analyze this ad and provide structured insights. Be specific and actionable.
 - Creative Coherence: Do all elements work together?
 - Competitive Edge: Is it differentiated from typical ads?
 
-9. KEY STRATEGIC INSIGHT: One actionable takeaway about this ad's strategy.
+9. KEY STRATEGIC INSIGHT: One actionable takeaway about this ad's strategy. Explain what this reveals about the brand's competitive positioning, testing approach, or market strategy.
+
+10. COMPETITIVE POSITIONING: What does this ad reveal about how the brand positions itself against competitors? What market segment or buyer persona are they targeting?
+
+11. BUSINESS CONTEXT: Connect this ad to likely business objectives (e.g., Q4 budget capture, product launch, market expansion, retention). What strategic goal does this creative serve?
 
 === OUTPUT (JSON only, no markdown) ===
 {{
@@ -92,5 +98,7 @@ Analyze this ad and provide structured insights. Be specific and actionable.
         "creative_coherence": 7,
         "competitive_edge": 6
     }},
-    "key_insight": "Strategic takeaway"
+    "key_insight": "Strategic takeaway with business context",
+    "competitive_positioning": "What this reveals about brand positioning",
+    "business_context": "Likely business objective this ad serves"
 }}
