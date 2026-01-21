@@ -107,14 +107,16 @@ Return this JSON format:
 
             # Helper to parse JSON safely (handles truncated/malformed JSON)
             def try_parse_json(content: str) -> dict | None:
+                import re
                 if not content:
                     return None
-                # Find JSON boundaries
+                
+                # Find JSON start
                 json_start = content.find("{")
                 if json_start == -1:
                     return None
-                    
-                # Try to find matching closing brace
+                
+                # Method 1: Try to find properly matched braces
                 brace_count = 0
                 json_end = -1
                 for i, char in enumerate(content[json_start:], json_start):
@@ -126,22 +128,58 @@ Return this JSON format:
                             json_end = i + 1
                             break
                 
+                # Method 2: If no match, try last closing brace
                 if json_end == -1:
                     json_end = content.rfind("}") + 1
                 
                 if json_end > json_start:
+                    json_str = content[json_start:json_end]
+                    
+                    # Try direct parse first
                     try:
-                        return json.loads(content[json_start:json_end])
+                        return json.loads(json_str)
                     except json.JSONDecodeError:
-                        # Try to fix common issues
-                        json_str = content[json_start:json_end]
-                        # Remove trailing commas before ] or }
-                        import re
-                        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
-                        try:
-                            return json.loads(json_str)
-                        except json.JSONDecodeError:
-                            return None
+                        pass
+                    
+                    # Fix common issues
+                    json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)  # trailing commas
+                    json_str = re.sub(r'\.\.\.[^"]*', '', json_str)  # remove ... truncation
+                    
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        pass
+                    
+                    # Method 3: Try to salvage partial ads array
+                    # Find "ads": [ and extract what we can
+                    ads_match = re.search(r'"ads"\s*:\s*\[', content)
+                    if ads_match:
+                        ads_start = ads_match.end()
+                        # Find complete ad objects
+                        ads = []
+                        ad_pattern = r'\{[^{}]*"id"\s*:\s*\d+[^{}]*\}'
+                        for match in re.finditer(ad_pattern, content[ads_start:]):
+                            try:
+                                ad = json.loads(match.group())
+                                ads.append(ad)
+                            except json.JSONDecodeError:
+                                continue
+                        
+                        if ads:
+                            # Extract brand from content
+                            brand_match = re.search(r'"brand"\s*:\s*"([^"]+)"', content)
+                            brand_name = brand_match.group(1) if brand_match else "Unknown"
+                            market_match = re.search(r'"market"\s*:\s*"([^"]+)"', content)
+                            market_name = market_match.group(1) if market_match else "ALL"
+                            
+                            return {
+                                "brand": brand_name,
+                                "market": market_name,
+                                "platform": "Meta",
+                                "total_ads": len(ads),
+                                "ads": ads
+                            }
+                
                 return None
 
             # Essayer d'abord le résultat final
